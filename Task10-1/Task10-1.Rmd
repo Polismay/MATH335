@@ -168,4 +168,4 @@ grid.arrange(p1, p2, ncol = 2, nrow = 1)
 
 ## Conclusions
 
-In the graph we can clearly see that My portfolio made better returns than my friend's. I invested most of my money on TSLA stocks and at the end I ended up making slight more profit than Her portfolio which consists of more than 50% of AAPL stocks and less of TSLA. At the end TSLA turned out to be the stock that decided who made better profit and helped me win the competition. I have attached the comparision of AAPL and TSLA stocks to show how TSLA made better profits.
+In the graph we can clearly see that My portfolio made better returns than my friend's. I invested most of my money on TSLA stocks and at the end I ended up making slight more profit than Her portfolio which consists of more than 50% of AAPL stocks and less of TSLA. At the end TSLA turned out to be the stock that decided who made better profit and helped me win the competition. I have attached the comparision of AAPL(which went up by about 50% in that duration) and TSLA(which went up by more than 150% in that duration) stocks to show how TSLA made better profits.
