@@ -1,0 +1,72 @@
+---
+title: "W10 Task: The US Grocer (KR)"
+author: "Polisma Yadav"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+
+output:
+  html_document:  
+    keep_md: true
+    toc: true
+    toc_float: true
+    code_folding: hide
+    fig_height: 6
+    fig_width: 12
+    fig_align: 'center'
+---
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r load_libraries, include=FALSE}
+# Use this R-Chunk to load all your libraries!
+#install.packages("tidyverse") # run this line once in console to get package
+library(tidyverse)
+library(dygraphs)
+library(timetk)
+library(tidyquant)
+
+```
+
+```{r load_data}
+# Use this R-Chunk to import all your datasets!
+
+
+index <- tq_index_options()
+dow <- tq_index("DOW")
+
+sys_now <- now()
+five_yrs <- sys_now - dyears(x = 5)
+two_yrs <- sys_now - dyears(x = 2)
+kroger <- tq_get(c("KR"), get = "stock.prices", from = five_yrs, to = sys_now) %>% 
+  select(date, adjusted) 
+kr <- tk_xts(kroger)
+
+```
+
+## Background
+
+Interactive visualizations can often be powerful for data investigations. They let your team get at questions in real-time. Use the Kroger (KR) stock price to build an interactive visualization of their performance over the last five years. Take some time to build a couple of different visualizations that show Krogers' performance. See the task items below for a description.
+
+
+
+## Data Wrangling & Visualization
+
+
+```{r plot_data}
+dygraph(kr, main = "5 YRS PERFORMANCE")
+
+
+dygraph(kr, , main = "PERFORMANCE SINCE APRIL 5, 2019") %>% 
+  dyRangeSelector(dateWindow = c("2019-04-05", "2021-11-17")) %>% 
+  dyRebase(value = 10000) %>% 
+  dyAnnotation("2019-07-22", text = "v", tooltip = "Drop") %>%
+  dyAnnotation("2021-09-03", text = "^", tooltip = "Raised")
+
+```
+
+## Conclusions
+
+The first graph shows the visualization of KROGER stock performance in last 5 years. If you hover the mouse over the series, individual values are displayed along with the date. You can zoom into specific time frames and can zoom out by double clicking on the graph.
+
+The second graph shows the visualization of KROGER stocks performance since April 5th two years ago. It shows returns on an initial investment of $10,000 over this time period which almost was doubled. I have marked two annotations to show the lowest and highest points of the series.
