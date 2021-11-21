@@ -1,0 +1,13 @@
+name: case10
+title: case10
+username: polismay
+account: polismay
+server: shiny.byui.edu
+hostUrl: https://shiny.byui.edu/__api__
+appId: 1688
+bundleId: 3459
+url: https://shiny.byui.edu/content/c2496140-1f2b-4d25-b6c1-ddb7c98f33bc/
+when: 1637473759.02652
+lastSyncTime: 1637473759.02652
+asMultiple: FALSE
+asStatic: TRUE
