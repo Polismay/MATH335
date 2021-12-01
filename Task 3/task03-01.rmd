@@ -1,0 +1,55 @@
+---
+title: "dplyr and Gapminder Part 2"
+author: "Polisma Yadav"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:  
+    keep_md: true
+    toc: true
+    toc_float: true
+    code_folding: hide
+    fig_height: 6
+    fig_width: 12
+    fig_align: 'center'
+---
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+```{r load_libraries, include=FALSE}
+# Use this R-Chunk to load all your libraries!
+#install.packages("tidyverse") # run this line once in console to get package
+library(tidyverse)
+library(gapminder)
+library(ggplot2)
+
+```
+
+
+## Background
+
+
+## Image
+
+```{r tidy_data}
+weight <- gapminder %>% 
+  group_by(continent, year) %>% 
+  mutate(w.mean=weighted.mean(x=gdpPercap, w=pop))
+
+gapminder %>%
+ filter(country != "Kuwait") %>% 
+ggplot(aes(x=year, y=gdpPercap)) + 
+  geom_line(aes(group=country, color=continent)) +
+  geom_point(aes(color=continent, size=pop/40000)) +
+  geom_point(data=weight, aes(x=year, y=w.mean, size=pop/40000), color="black") +
+  geom_line(data=weight, aes(x=year, y=w.mean), color="black") +
+  facet_wrap(~ continent, nrow=1) +
+  theme_bw() +
+  labs(X = "Year", y="GDP per capita", color="Continent", size="Population (100k)")
+
+```
+
+```{r}
+ggsave("image.png", width = 15, units = "in")
+```
