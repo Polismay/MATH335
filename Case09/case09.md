@@ -1,15 +1,15 @@
 ---
-title: "It's About Time"
-author: "Polisma Yadav"
-date: "November 13, 2021"
+title: "It’s about time"
+author: "Christopher Wilson"
+date: "December 07, 2021"
 output:
   html_document:  
     keep_md: true
     toc: true
     toc_float: true
     code_folding: hide
-    fig_height: 6
-    fig_width: 12
+    fig_width: 15
+    fig_height: 7
     fig_align: 'center'
 ---
 
@@ -20,17 +20,8 @@ output:
 
 ```r
 # Use this R-Chunk to import all your datasets!
-sales <- read_csv(url("https://byuistats.github.io/M335/data/sales.csv")) %>% 
-  mutate(timezone = with_tz(Time, Sys.timezone(location = TRUE))) %>% 
-  mutate(hourtime = floor_date(timezone, unit = "second")) %>% 
-  mutate(hour_in_day = hour(hourtime)) %>% 
-  filter(Amount >= 0)
-
-sales$Name <- str_trim(sales$Name, "both") 
-sales$Name <- str_replace_all(sales$Name, "Missing", "NA")
-
-sales <- sales %>% 
-  filter(Name != "NA")
+dat <- read_csv("https://byuistats.github.io/M335/data/sales.csv") %>% 
+  with_tz("America/Denver")
 ```
 
 ## Background
@@ -39,65 +30,91 @@ We have transaction data for a few businesses that have been in operation for th
 
 This course only looks at understanding and visualizing recorded time series data. If you would like to learn more about forecasting I would recommend Forecasting: Principles and Practice (Links to an external site.) and for a quick introduction read Exploring and Visualizing Time Series.
 
-## Data Wrangling & Visualization
+
+## Data Wrangling and Visualization
 
 
-```r
-sales %>%  
-ggplot(aes(x = timezone, y = Amount)) +
-  geom_point() + 
-  theme_bw()
-```
-
-![](case09_files/figure-html/tidy_plot-1.png)<!-- -->
+### Daily Totals
 
 ```r
-sales %>% 
-ggplot(aes(x = hour_in_day, y = Amount)) + 
-  geom_point() +
-  theme_bw()
+dat %>% 
+  mutate(Day = day(Time)) %>% 
+  group_by(Name, Day, Type) %>% 
+  summarize(Amount = sum(Amount)) %>% 
+  ggplot(aes(x = Day, y = Amount, color = Name)) +
+  geom_line(alpha = .4) +
+  geom_point(size = 1) +
+  labs(x = "Day of the Year", y = "Total Sales ($)",
+       Title = "Sales Per Day") +
+  facet_wrap(~Name, ncol = 1) +
+  theme(legend.position = "none")
 ```
 
-![](case09_files/figure-html/tidy_plot-2.png)<!-- -->
+![](case09_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+
+
+
+### Weekly Totals
 
 ```r
-sales %>% 
-ggplot(aes(x = hour_in_day, y = Amount)) + 
-  geom_col() +
-  theme_bw()
+dat %>% 
+  mutate(Week = week(Time)) %>% 
+  group_by(Name, Week, Type) %>% 
+  summarize(Amount = sum(Amount)) %>% 
+  ggplot(aes(x = Week, y = Amount, color = Name)) +
+  geom_line(alpha = .4) +
+  geom_point(size = 1) +
+  labs(x = "Week of the Year", y = "Total Sales ($)",
+       Title = "Sales Per Week") +
+  geom_text(aes(label = Amount),hjust = 1.1, vjust = 1, size = 2.5) +
+  facet_wrap(~Name, ncol = 1) +
+  theme(legend.position = "none")
 ```
 
-![](case09_files/figure-html/tidy_plot-3.png)<!-- -->
+![](case09_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+
+### Monthly rates
 
 ```r
-sales %>% 
-ggplot(aes(x = hour_in_day, y = Amount)) + 
-  geom_point() +
-  facet_wrap(~Name) + 
-  theme_bw()  
+dat %>% 
+  mutate(Month = month(Time)) %>% 
+  group_by(Name, Month, Type) %>% 
+  summarize(Amount = sum(Amount)) %>% 
+  ggplot(aes(x = Month, y = Amount, color = Name)) +
+  geom_line(alpha = .4) +
+  geom_point(size = 1) +
+  geom_text(aes(label = Amount),hjust = 1.1, vjust = 1, size = 2.5) +
+  labs(x = "Month of the Year", y = "Total Sales ($)",
+       Title = "Sales Per Month") +
+  facet_wrap(~Name, ncol = 1) +
+  theme(legend.position = "none")
 ```
 
-![](case09_files/figure-html/tidy_plot-4.png)<!-- -->
+![](case09_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
+
+### Hourly Totals
 
 ```r
-sales %>% 
-ggplot(aes(x = hour_in_day, y = Amount, color = Name)) + 
-  geom_point() +
-  geom_line() + 
-  theme_bw()  
+# Use this R-Chunk to plot & visualize your data!
+
+dat %>% 
+  mutate(Hour = floor_date(Time, unit = "hour") %>% hour()) %>% 
+  group_by(Name, Hour, Type) %>% 
+  summarise(Amount = sum(Amount)) %>% 
+  ggplot(aes(x = Hour, y = Amount, color = Name)) +
+  geom_line(alpha = 0.4) +
+  geom_point(size = 1) +
+  labs(x = "Hour of Day", y = "Total Sales ($)",
+       Title = "Sales Per Hour") +
+  facet_wrap(~Type, ncol = 1) +
+  coord_cartesian(xlim = c(7, 24)) +
+  facet_wrap(~Name, ncol = 1) +
+  theme(legend.position = "none")
 ```
 
-![](case09_files/figure-html/tidy_plot-5.png)<!-- -->
-
+![](case09_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
 
 ## Conclusions
 
-Plot 1 shows inaccuracies. 
-
-Plot 2 shows the answer to provide an understanding and recommendation for hours of operation. 
-
-Plot 3 shows the solution to we don’t have employee numbers, but sales traffic can help. Provide some visualizations on customer traffic. 
-
-Plot 4 provides a final comparison of the six companies and a final recommendation.
-
-Plot 5 provides a final comparison of the six companies and a final recommendation.
+I have four plots representing daily, weekly, monthly and hourly gross revenue summaries and comparisons. From monthly graph we can clearly see that HotDiggity and LeBelle performed the best and I recomment these two businesses. 
